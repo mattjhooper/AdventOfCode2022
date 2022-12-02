@@ -3,85 +3,94 @@ Console.WriteLine("---Day 2: Rock Paper Scissors-- - ");
 
 string[] lines = File.ReadAllLines(@"Input.txt");
 
-
-int totalScore = 0;
-
-/*
-foreach (string line in lines)
-{
-    var hands = line.Split(' ');
-
-    char opponent = hands[0][0];
-    char player = hands[1][0];
-
-    // Console.WriteLine($"Opponent plays {opponent}, I play {player}.");
-
-    //int handscore = ShapeScore(player);
-    //handscore += WinLossDraw(opponent, player);
-    //totalScore += handscore;
-    totalScore += Strategy(opponent, player);
-}
-*/
-
-totalScore = lines.Select(l => CheckHand(GetHands(l))).Sum();
-/*
-totalScore = lines
-    .Select(l => GetHands(l))
-    .Select(p => CheckHand(p))
-    .Sum();
-*/
+var totalScore = lines.Select(l => ApplyStrategy(ProcessLine(l))).Sum();
 
 Console.WriteLine($"Total Score {totalScore}."); // 12111
 
-static (char opponent, char goal) GetHands(string handsAsString)
+static (IShape shape, IStrategy strategy) ProcessLine(string line)
 {
-    var hands = handsAsString.Split(' ');
-    return (hands[0][0], hands[1][0]);
+    var parts = line.Split(' ');
+    return (IShape.Create(parts[0][0]), IStrategy.Create(parts[1][0]));
 }
 
-static int ShapeScore(char shape) => shape switch
+static int ApplyStrategy((IShape shape, IStrategy strategy) parts) => parts.strategy.Score + parts.shape.ForStrategy(parts.strategy).Score;
+
+interface IShape
 {
-    'X' => 1,
-    'Y' => 2,
-    'Z' => 3,
-    _ => throw new ArgumentOutOfRangeException(nameof(shape), $"Unexpected shape value: {shape}"),
-};
+    int Score { get; }
 
-static int WinLossDraw(char opponent, char player) => (opponent, player) switch
+    public static IShape Create(char shapeChar) => shapeChar switch
+    {
+        'A' => new Rock(),
+        'B' => new Paper(),
+        'C' => new Scissors(),
+        _ => throw new NotImplementedException(),
+    };
+
+    IShape ForStrategy(IStrategy strategy);
+}
+
+record Rock : IShape
 {
-    // A = Rock, B = Paper, C = Scissors
-    // X = Rock, Y = Paper, Z = Scissors
-    // Win = 6, Draw = 3, Loss = 0
+    public int Score => 1;
 
-    ('A', 'X') => 3,
-    ('A', 'Y') => 6,
-    ('A', 'Z') => 0,
-    ('B', 'X') => 0,
-    ('B', 'Y') => 3,
-    ('B', 'Z') => 6,
-    ('C', 'X') => 6,
-    ('C', 'Y') => 0,
-    ('C', 'Z') => 3,
-    _ => throw new ArgumentOutOfRangeException($"Unexpected pair supplied: {opponent} {player}"),
-};
+    public IShape ForStrategy(IStrategy strategy) => strategy switch
+    {
+        IsBeatenBy => new Paper(),
+        DrawsWith => new Rock(),
+        LosesTo => new Scissors(),
+        _ => throw new NotImplementedException(),
+    };
+}
 
-static int Strategy(char opponent, char goal) => (opponent, goal) switch
+record Paper : IShape
 {
-    // A = Rock, B = Paper, C = Scissors
-    // X = Rock, Y = Paper, Z = Scissors
-    // X = lose, Y = Draw, Z = Win
-    // Win = 6, Draw = 3, Loss = 0
+    public int Score => 2;
+    public IShape ForStrategy(IStrategy strategy) => strategy switch
+    {
+        IsBeatenBy => new Scissors(),
+        DrawsWith => new Paper(),
+        LosesTo => new Rock(),
+        _ => throw new NotImplementedException(),
+    };
+}
 
-    ('A', 'X') => 0 + ShapeScore('Z'),
-    ('A', 'Y') => 3 + ShapeScore('X'),
-    ('A', 'Z') => 6 + ShapeScore('Y'),
-    ('B', 'X') => 0 + ShapeScore('X'),
-    ('B', 'Y') => 3 + ShapeScore('Y'),
-    ('B', 'Z') => 6 + ShapeScore('Z'),
-    ('C', 'X') => 0 + ShapeScore('Y'),
-    ('C', 'Y') => 3 + ShapeScore('Z'),
-    ('C', 'Z') => 6 + ShapeScore('X'),
-    _ => throw new ArgumentOutOfRangeException($"Unexpected pair supplied: {opponent} {goal}"),
-};
+record Scissors : IShape
+{
+    public int Score => 3;
+    public IShape ForStrategy(IStrategy strategy) => strategy switch
+    {
+        IsBeatenBy => new Rock(),
+        DrawsWith => new Scissors(),
+        LosesTo => new Paper(),
+        _ => throw new NotImplementedException(),
+    };
+}
 
-static int CheckHand((char opponent, char goal) hands) => Strategy(hands.opponent, hands.goal);
+interface IStrategy
+{
+    int Score { get; }
+
+    public static IStrategy Create(char strategyChar) => strategyChar switch
+    {
+        'X' => new LosesTo(),
+        'Y' => new DrawsWith(),
+        'Z' => new IsBeatenBy(),
+        _ => throw new NotImplementedException(),
+    };
+}
+
+record IsBeatenBy : IStrategy
+{
+    public int Score => 6;
+}
+
+record DrawsWith : IStrategy
+{
+    public int Score => 3;
+}
+
+record LosesTo : IStrategy
+{
+    public int Score => 0;
+}
