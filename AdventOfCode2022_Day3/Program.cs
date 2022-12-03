@@ -4,30 +4,15 @@ using System.Text.RegularExpressions;
 Console.WriteLine("--- Day 3: Rucksack Reorganization ---");
 
 string[] lines = File.ReadAllLines(@"Input.txt");
-int prioritySum = 0;
-foreach (string line in lines)
-{
-    var (compartment1, compartment2) = GetCompartments(line);
+int prioritySum = lines
+    .Select(l => GetCompartments(l))
+    .Select(b => b.compartment1.Intersect(b.compartment2).Single())
+    .Select(c => GetPriority(c))
+    .Sum();
 
-    var compartment1Items = new HashSet<char>();
-    foreach(var item in compartment1)
-    {
-        compartment1Items.Add(item);
-    }
+Console.WriteLine($"Priority Sum {prioritySum}."); // 8298
 
-    char match = default;
-    for(int i=0; match == default && i < compartment2.Length; i++)
-    {
-        compartment1Items.TryGetValue(compartment2[i], out match);
-    }
-
-    //Console.WriteLine($"Common item {match}. Priority: {GetPriority(match)}");
-    prioritySum += GetPriority(match);
-}
-
-Console.WriteLine($"Priority Sum {prioritySum}.");
-
-static (string, string) GetCompartments(string line)
+static (string compartment1, string compartment2) GetCompartments(string line)
 {
     var compartment1 = line.Remove(line.Length / 2);
     var compartment2 = line.Substring(line.Length / 2);
