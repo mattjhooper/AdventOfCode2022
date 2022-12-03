@@ -5,12 +5,25 @@ Console.WriteLine("--- Day 3: Rucksack Reorganization ---");
 
 string[] lines = File.ReadAllLines(@"Input.txt");
 int prioritySum = lines
-    .Select(l => GetCompartments(l))
+    .Select(GetCompartments)
     .Select(b => b.compartment1.Intersect(b.compartment2).Single())
-    .Select(c => GetPriority(c))
+    .Select(GetPriority)
     .Sum();
 
 Console.WriteLine($"Priority Sum {prioritySum}."); // 8298
+
+
+int groupStart = 0;
+int badgePriority = 0;
+while (groupStart < lines.Length)
+{
+    var group = lines.Skip(groupStart).Take(3).ToArray();
+    groupStart += 3;
+    char badge = group[0].Intersect(group[1]).Intersect(group[2]).Single();
+    badgePriority += GetPriority(badge);
+}
+
+Console.WriteLine($"Badge Priority Sum {badgePriority}.");
 
 static (string compartment1, string compartment2) GetCompartments(string line)
 {
@@ -23,3 +36,4 @@ static int GetPriority(char item)
 {
     return item < 'a' ? (int)item - (int)'A' + 27 : (int)item - (int)'a' + 1;
 }
+
