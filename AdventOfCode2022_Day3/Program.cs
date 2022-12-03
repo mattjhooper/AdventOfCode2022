@@ -21,7 +21,7 @@ foreach (string line in lines)
         compartment1Items.TryGetValue(compartment2[i], out match);
     }
 
-    Console.WriteLine($"Common item {match}. Priority: {GetPriority(match)}");
+    //Console.WriteLine($"Common item {match}. Priority: {GetPriority(match)}");
     prioritySum += GetPriority(match);
 }
 
