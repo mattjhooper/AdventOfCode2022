@@ -10,7 +10,7 @@ int prioritySum = lines
     .Select(GetPriority)
     .Sum();
 
-Console.WriteLine($"Priority Sum {prioritySum}."); // 8298
+Console.WriteLine($"Priority Sum {prioritySum}.");
 
 
 int groupStart = 0;
