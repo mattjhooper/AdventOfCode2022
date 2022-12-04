@@ -12,18 +12,12 @@ int prioritySum = lines
 
 Console.WriteLine($"Priority Sum {prioritySum}.");
 
+var badgePrioritySum = GetGroups(lines)
+    .Select(b => b[0].Intersect(b[1]).Intersect(b[2]).Single())
+    .Select(GetPriority)
+    .Sum();
 
-int groupStart = 0;
-int badgePriority = 0;
-while (groupStart < lines.Length)
-{
-    var group = lines.Skip(groupStart).Take(3).ToArray();
-    groupStart += 3;
-    char badge = group[0].Intersect(group[1]).Intersect(group[2]).Single();
-    badgePriority += GetPriority(badge);
-}
-
-Console.WriteLine($"Badge Priority Sum {badgePriority}.");
+Console.WriteLine($"Badge Priority Sum 2 {badgePrioritySum}.");
 
 static (string compartment1, string compartment2) GetCompartments(string line)
 {
@@ -37,3 +31,12 @@ static int GetPriority(char item)
     return item < 'a' ? (int)item - (int)'A' + 27 : (int)item - (int)'a' + 1;
 }
 
+static IEnumerable<string[]> GetGroups(string[] lines)
+{
+    int groupStart = 0;
+    while (groupStart < lines.Length)
+    {
+        yield return lines.Skip(groupStart).Take(3).ToArray();
+        groupStart += 3;
+    }    
+}
