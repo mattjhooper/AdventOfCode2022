@@ -10,6 +10,13 @@ var fullyContainedTotal = lines
 
 Console.WriteLine($"Fully Contained Total: {fullyContainedTotal}");
 
+var overlapTotal = lines
+    .Select(GetAssignments)
+    .Select(OverlapCount)
+    .Sum();
+
+Console.WriteLine($"Overlaps Total: {overlapTotal}");
+
 static (Assignment a1, Assignment a2) GetAssignments(string line)
 {
     var parts = line.Split(',');
@@ -23,6 +30,8 @@ static Assignment GetAssignment(string assignment)
 }
 
 static int FullyContainedCount((Assignment a1, Assignment a2) pair) => pair.a1.FullyContains(pair.a2) || pair.a2.FullyContains(pair.a1) ? 1 : 0;
+
+static int OverlapCount((Assignment a1, Assignment a2) pair) => pair.a1.Overlaps(pair.a2) ? 1 : 0;
 
 record struct Assignment
 {
@@ -39,6 +48,8 @@ record struct Assignment
     }
 
     public bool FullyContains(Assignment r) => Start <= r.Start && r.End <= End;
+
+    public bool Overlaps(Assignment r) => (Start <= r.Start && r.Start <= End) || (r.Start <= Start && Start <= r.End);
 
     public override string ToString() => $"{Start}-{End}";
 }
