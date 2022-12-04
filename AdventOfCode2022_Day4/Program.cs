@@ -3,15 +3,17 @@ Console.WriteLine("--- Day 4: Camp Cleanup ---");
 
 string[] lines = File.ReadAllLines(@"Input.txt");
 
-var fullyContainedTotal = lines
+var assignments = lines
     .Select(GetAssignments)
+    .ToList();
+
+var fullyContainedTotal = assignments
     .Select(FullyContainedCount)
     .Sum();
 
 Console.WriteLine($"Fully Contained Total: {fullyContainedTotal}");
 
-var overlapTotal = lines
-    .Select(GetAssignments)
+var overlapTotal = assignments
     .Select(OverlapCount)
     .Sum();
 
