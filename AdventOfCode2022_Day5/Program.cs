@@ -3,8 +3,8 @@ Console.WriteLine("--- Day 5: Supply Stacks ---");
 
 string[] lines = File.ReadAllLines(@"Input.txt");
 
-const int BASE = 2;
-const int STACK_COUNT = 3;
+const int BASE = 7;
+const int STACK_COUNT = 9;
 
 var stacks = new Stack<char>[STACK_COUNT];
 
@@ -28,6 +28,8 @@ for (int l = BASE; l>=0; l--)
     }
 }
 
+StackInfo(stacks);
+
 /*
 for (int s = 0; s < STACK_COUNT; s++)
 {
@@ -38,9 +40,9 @@ for (int s = 0; s < STACK_COUNT; s++)
 }
 */
 
-for (int i=STACK_COUNT+2; i<lines.Length; i++)
+for (int i= BASE + 3; i<lines.Length; i++)
 {
-    // Console.WriteLine(lines[i]);
+    Console.WriteLine(lines[i]);
     var instructions = lines[i].Split(' ');
     int crateCount = int.Parse(instructions[1]);
     int fromIndex = int.Parse(instructions[3])-1;
@@ -49,12 +51,28 @@ for (int i=STACK_COUNT+2; i<lines.Length; i++)
 
     for (int m = 0; m < crateCount; m++)
     {
-        stacks[toIndex].Push(stacks[fromIndex].Pop());
+        char crate;
+        if (stacks[fromIndex].TryPop(out crate))
+        {
+            stacks[toIndex].Push(crate);
+        }
     }
+
+    StackInfo(stacks);
 }
 
  
 for (int s = 0; s < STACK_COUNT; s++)
 {
     Console.Write(stacks[s].Peek());
+}
+
+static void StackInfo(Stack<char>[] stacks)
+{
+    for (int s = 0; s < stacks.Length; s++)
+    {
+        char crate = ' ';
+        stacks[s].TryPeek(out crate);
+        Console.WriteLine($"Stack: {s+1} has {stacks[s].Count} crates. Top Crate contains [{crate}]");        
+    }
 }
