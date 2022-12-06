@@ -1,4 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Collections.Immutable;
+
 Console.WriteLine("--- Day 5: Supply Stacks ---");
 
 string[] lines = File.ReadAllLines(@"Input.txt");
@@ -6,12 +8,14 @@ string[] lines = File.ReadAllLines(@"Input.txt");
 const int BASE = 7;
 const int STACK_COUNT = 9;
 
-var stacks = new List<char>[STACK_COUNT];
+var builder = ImmutableArray.CreateBuilder<ImmutableList<char>>();
 
 for(int s=0; s< STACK_COUNT; s++)
 {
-    stacks[s] = new();
+    builder.Add(ImmutableList.Create<char>());
 }
+var stacks = builder.ToImmutable();
+
 
 for (int l = 0; l<= BASE; l++)
 {
@@ -42,17 +46,18 @@ for (int s = 0; s < STACK_COUNT; s++)
 
 for (int i= BASE + 3; i<lines.Length; i++)
 {
-    Console.WriteLine(lines[i]);
+    // Console.WriteLine(lines[i]);
     var instructions = lines[i].Split(' ');
     int crateCount = int.Parse(instructions[1]);
     int fromIndex = int.Parse(instructions[3])-1;
     int toIndex = int.Parse(instructions[5])-1;
     // Console.WriteLine($"move {crateCount} from {fromIndex} to {toIndex}");
 
-    var movingCrates = stacks[fromIndex].Take(crateCount).ToList();
+    foreach (var item in stacks[fromIndex].Take(crateCount))
+    {
+        stacks[toIndex].Prepend(item);
+    }
     stacks[fromIndex].RemoveRange(0, crateCount);
-    movingCrates.AddRange(stacks[toIndex]);
-    stacks[toIndex] = movingCrates;
 
     // StackInfo(stacks);
 }
