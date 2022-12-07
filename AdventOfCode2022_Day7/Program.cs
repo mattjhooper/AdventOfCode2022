@@ -3,17 +3,11 @@ Console.WriteLine("--- Day 7: No Space Left On Device ---");
 
 string[] lines = File.ReadAllLines(@"Input.txt");
 
-int i = 0;
-
 SystemDirectory currDir = null;
 
-while (i < lines.Length)
-{
-    (currDir, i) = ProcessLine(lines, currDir, i);
-}
-
+currDir = lines.Aggregate(currDir, ProcessLine);
 currDir = currDir.GetRoot();
-// currDir.Print("");
+
 var sumDirsUnder100k = currDir.GetThisAndAllSubDirectories().Select(d => d.GetSize()).Where(s => s <= 100000).Sum();
 Console.WriteLine($"Total sum of Directories under 100k: {sumDirsUnder100k}");
 
@@ -25,83 +19,59 @@ Console.WriteLine($"All memory used: {allMemoryUsed}. Space required: {spaceRequ
 var directorySizeToDelete = currDir.GetThisAndAllSubDirectories().Select(d => d.GetSize()).OrderBy(s => s).First(s => s >= spaceRequired);
 Console.WriteLine($"Directory Size to delete: {directorySizeToDelete}.");
 
-static (SystemDirectory currentDirectory, int currentLine) ProcessLine(string[] lines, SystemDirectory directory, int line)
+static SystemDirectory ProcessLine(SystemDirectory d, string line)
 {
-    string outputLine = lines[line];
-
-    if (!outputLine.IsCommand())
+    if (line == "$ cd /")
     {
-        // Console.WriteLine($"Not a command: {outputLine}");
-        return (directory, ++line);
-    }
-
-    if (outputLine == "$ cd ..")
-    {
-        // Console.WriteLine($"Move to parent directory");
-        return (directory.ParentDirectory, ++line);
-    }
-
-    if (outputLine == "$ cd /")
-    {
-        // Console.WriteLine($"Move to root");
         var root = new SystemDirectory
         {
             Name = "/",
         };
 
-        return (root, ++line);
+        return root;
     }
 
-    if (outputLine.StartsWith("$ cd "))
+    if (line == "$ cd ..")
     {
-        var parts = outputLine.Split(' ');
+        return d.ParentDirectory;
+    }
+
+    if (line.StartsWith("$ cd "))
+    {
+        var parts = line.Split(' ');
         var name = parts[2];
 
-        // Console.WriteLine($"Move to {name}");
-        var subdirectory = directory.ChildDirectories.First(d => d.Name == name);
+        var subdirectory = d.ChildDirectories.First(d => d.Name == name);
 
-        return (subdirectory, ++line);
+        return subdirectory;
     }
 
-    if (outputLine == "$ ls")
+    if (line == "$ ls")
     {
-        // Console.WriteLine($"List contents");
-
-        bool keepLooking = true;
-        line++;
-
-        while (keepLooking) 
-        {                    
-            outputLine = lines[line];
-
-            if (outputLine.StartsWith("dir"))
-            {
-                var name = outputLine.Split(' ')[1];
-                var childDir = new SystemDirectory
-                {
-                    Name = name,
-                    ParentDirectory = directory,
-                };
-                directory.ChildDirectories.Add(childDir);
-            }
-            else
-            {
-                var parts = outputLine.Split(' ');
-                var childFile = new SystemFile()
-                {
-                    Name = parts[1],
-                    Size = long.Parse(parts[0]),
-                };
-                directory.SystemFiles.Add(childFile);
-            }
-
-            keepLooking = ++line < lines.Length && !lines[line].IsCommand();
-        }
-
-        return (directory, line);
+        return d;
     }
 
-    return (directory, ++line);  
+    if (line.StartsWith("dir"))
+    {
+        var name = line.Split(' ')[1];
+        var childDir = new SystemDirectory
+        {
+            Name = name,
+            ParentDirectory = d,
+        };
+        d.ChildDirectories.Add(childDir);
+        return d;
+    }
+
+    var fileParts = line.Split(' ');
+    var childFile = new SystemFile()
+    {
+        Name = fileParts[1],
+        Size = long.Parse(fileParts[0]),
+    };
+    d.SystemFiles.Add(childFile);
+
+    return d;
 }
 
 class SystemDirectory: IPrintable
