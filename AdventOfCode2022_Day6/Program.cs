@@ -22,11 +22,6 @@ var position = stream.Select(_ => GetSection(stream, i++, MARKER_LENGTH)).First(
 
 Console.WriteLine($"start-of-packet marker 2: {position + MARKER_LENGTH}");
 
-/*
-foreach(var section in sections)
-    Console.WriteLine($"Starter: {section.i}. chunk: {section.chunk}");
-*/
-
 // 3425
 
 static (int i, string section) GetSection(string stream, int start, int length) => (start, stream.Substring(start, length));
