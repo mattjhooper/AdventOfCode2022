@@ -14,10 +14,16 @@ while (i < lines.Length)
 
 currDir = currDir.GetRoot();
 // currDir.Print("");
-var total = currDir.GetThisAndAllSubDirectories().Select(d => d.GetSize()).Where(s => s <= 100000).Sum();
+var sumDirsUnder100k = currDir.GetThisAndAllSubDirectories().Select(d => d.GetSize()).Where(s => s <= 100000).Sum();
+Console.WriteLine($"Total sum of Directories under 100k: {sumDirsUnder100k}");
 
-Console.WriteLine($"Total: {total}");
+var allMemoryUsed = currDir.GetSize();
+var spaceRequired = 30000000 - (70000000 - allMemoryUsed);
+Console.WriteLine($"All memory used: {allMemoryUsed}. Space required: {spaceRequired}");
 
+
+var directorySizeToDelete = currDir.GetThisAndAllSubDirectories().Select(d => d.GetSize()).OrderBy(s => s).First(s => s >= spaceRequired);
+Console.WriteLine($"Directory Size to delete: {directorySizeToDelete}.");
 
 static (SystemDirectory currentDirectory, int currentLine) ProcessLine(string[] lines, SystemDirectory directory, int line)
 {
