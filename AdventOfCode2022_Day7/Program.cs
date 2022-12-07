@@ -13,7 +13,7 @@ while (i < lines.Length)
 }
 
 currDir = currDir.GetRoot();
-currDir.Print("");
+// currDir.Print("");
 var total = currDir.GetThisAndAllSubDirectories().Select(d => d.GetSize()).Where(s => s <= 100000).Sum();
 
 Console.WriteLine($"Total: {total}");
@@ -25,19 +25,19 @@ static (SystemDirectory currentDirectory, int currentLine) ProcessLine(string[] 
 
     if (!outputLine.IsCommand())
     {
-        Console.WriteLine($"Not a command: {outputLine}");
+        // Console.WriteLine($"Not a command: {outputLine}");
         return (directory, ++line);
     }
 
     if (outputLine == "$ cd ..")
     {
-        Console.WriteLine($"Move to parent directory");
+        // Console.WriteLine($"Move to parent directory");
         return (directory.ParentDirectory, ++line);
     }
 
     if (outputLine == "$ cd /")
     {
-        Console.WriteLine($"Move to root");
+        // Console.WriteLine($"Move to root");
         var root = new SystemDirectory
         {
             Name = "/",
@@ -51,7 +51,7 @@ static (SystemDirectory currentDirectory, int currentLine) ProcessLine(string[] 
         var parts = outputLine.Split(' ');
         var name = parts[2];
 
-        Console.WriteLine($"Move to {name}");
+        // Console.WriteLine($"Move to {name}");
         var subdirectory = directory.ChildDirectories.First(d => d.Name == name);
 
         return (subdirectory, ++line);
@@ -59,7 +59,7 @@ static (SystemDirectory currentDirectory, int currentLine) ProcessLine(string[] 
 
     if (outputLine == "$ ls")
     {
-        Console.WriteLine($"List contents");
+        // Console.WriteLine($"List contents");
 
         bool keepLooking = true;
         line++;
