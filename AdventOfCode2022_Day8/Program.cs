@@ -46,6 +46,24 @@ for (int y = 0; y < maxY; y++)
 
 Console.WriteLine($"Visible Count: {visible}");
 
+int bestScenicScore = 0;
+
+for (int y = 0; y < maxY; y++)
+{
+    for (int x = 0; x < maxX; x++)
+    {
+        int height = map[x, y];
+        int scenicScore = map.GetUpsWhilst(x, y, i => i < height, true).Count() *
+                          map.GetDownsWhilst(x, y, i => i < height, true).Count() *
+                          map.GetLeftsWhilst(x, y, i => i < height, true).Count() *
+                          map.GetRightsWhilst(x, y, i => i < height, true).Count();
+
+        bestScenicScore = Math.Max(scenicScore, bestScenicScore);
+    }
+}
+
+Console.WriteLine($"Best Scenic Score: {bestScenicScore}");
+
 static class Extensions
 {
     public static IEnumerable<int> GetUps(this int[,] grid, int startX, int startY)
@@ -79,6 +97,74 @@ static class Extensions
         for (int x = startX + 1; x < maxX; x++)
         {
             yield return grid[x, startY];
+        }
+    }
+
+    public static IEnumerable<int> GetUpsWhilst(this int[,] grid, int startX, int startY, Func<int, bool> predicate, bool inclusive)
+    {
+        foreach(int item in grid.GetUps(startX, startY))
+        {
+            if (predicate(item))
+            {
+                yield return item;
+            }
+            else
+            {
+                if (inclusive) yield return item;
+
+                yield break;
+            }
+        }
+    }
+
+    public static IEnumerable<int> GetDownsWhilst(this int[,] grid, int startX, int startY, Func<int, bool> predicate, bool inclusive)
+    {
+        foreach (int item in grid.GetDowns(startX, startY))
+        {
+            if (predicate(item))
+            {
+                yield return item;
+            }
+            else
+            {
+                if (inclusive) yield return item;
+
+                yield break;
+            }
+        }
+    }
+
+    public static IEnumerable<int> GetLeftsWhilst(this int[,] grid, int startX, int startY, Func<int, bool> predicate, bool inclusive)
+    {
+        foreach (int item in grid.GetLefts(startX, startY))
+        {
+            if (predicate(item))
+            {
+                yield return item;
+            }
+            else
+            {
+                if (inclusive) yield return item;
+
+                yield break;
+            }
+        }
+    }
+
+    public static IEnumerable<int> GetRightsWhilst(this int[,] grid, int startX, int startY, Func<int, bool> predicate, bool inclusive)
+    {
+        foreach (int item in grid.GetRights(startX, startY))
+        {
+            if (predicate(item))
+            {
+                yield return item;
+            }
+            else
+            {
+                if (inclusive) yield return item;
+
+                yield break;
+            }
         }
     }
 }
