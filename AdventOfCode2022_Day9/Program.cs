@@ -12,16 +12,16 @@ var head = new Point(0, 0);
 var tail = new Point(0, 0);
 var visited = new HashSet<Point>();
 
-Print(head, tail);
+// Print(head, tail);
 foreach (var move in moves)
 {
     head = head.Move(move);
-    Print(head, tail);
+    // Print(head, tail);
 
     tail = Adjust(head, tail);
 
     visited.Add(tail);
-    Print(head, tail);
+    // Print(head, tail);
 }
 
 Print(head, tail, visited);
@@ -33,9 +33,9 @@ static void Print(Point head, Point tail, HashSet<Point>? visited = null)
     var v = visited ?? new HashSet<Point>();
 
     Console.SetCursorPosition(0, 0);
-    for (int y = 6; y > -2; y--)
+    for (int y = 40; y > -40; y--)
     {
-        for (int x = -2; x < 6; x++)
+        for (int x = -40; x < 40; x++)
         {
             var pos = new Point(x, y);
             if (head == pos)
@@ -62,7 +62,7 @@ static void Print(Point head, Point tail, HashSet<Point>? visited = null)
         }
         Console.WriteLine();
     }
-    Thread.Sleep(500);
+    Thread.Sleep(150);
 }
 
 
