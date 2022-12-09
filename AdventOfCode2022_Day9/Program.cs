@@ -24,35 +24,57 @@ foreach (var move in moves)
     // Print(head, tail);
 }
 
-Print(head, tail, visited);
+// Print(head, tail, visited);
 
 Console.WriteLine($"Tail visited {visited.Count} points.");
+
+var rope = new List<Point>();
+
+for (int k = 0; k<10; k++)
+{
+    rope.Add(new Point(0,0));
+}
+
+var visited2 = new HashSet<Point>();
+foreach (var move in moves)
+{
+    rope[0] = rope[0].Move(move);
+
+    for (int k = 1; k<10; k++)
+    {
+        rope[k] = Adjust(rope[k-1], rope[k]);
+    }
+    visited2.Add(rope[9]);
+    // Print(head, tail);
+}
+Print(rope[0], rope[9], visited2);
+Console.WriteLine($"Tail visited {visited2.Count} points.");
 
 static void Print(Point head, Point tail, HashSet<Point>? visited = null)
 {
     var v = visited ?? new HashSet<Point>();
 
     Console.SetCursorPosition(0, 0);
-    for (int y = 40; y > -40; y--)
+    for (int y = 15; y > -15; y--)
     {
-        for (int x = -40; x < 40; x++)
+        for (int x = -15; x < 15; x++)
         {
             var pos = new Point(x, y);
-            if (head == pos)
+            if (v.Contains(pos))
+            {
+                Console.Write('#');
+            }
+            else if (head == pos)
             {
                 Console.Write('H');
             }
-            if (tail == pos)
+            else if (tail == pos)
             {
                 Console.Write('T');
             }
             else if (x == 0 && y == 0)
             {
                 Console.Write('S');
-            }
-            else if (v.Contains(pos))
-            {
-                Console.Write('#');
             }
             else
             {
