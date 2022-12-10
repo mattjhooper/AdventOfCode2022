@@ -60,10 +60,10 @@ foreach (var move in moves)
 
     }
     visited2.Add(rope[9]);
-    Print2(rope);
+    // Print2(rope);
     // Print(head, tail);
 }
-//Print(rope[0], rope[9], visited2);
+Print(rope[0], rope[9], visited2);
 Console.WriteLine($"Tail visited {visited2.Count} points.");
 
 static void Print(Point head, Point tail, HashSet<Point>? visited = null)
