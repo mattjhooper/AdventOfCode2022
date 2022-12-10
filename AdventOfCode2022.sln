@@ -3,28 +3,30 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day1", "AdventOfCode2022_Day1\AdventOfCode2022_Day1.csproj", "{B1026CBF-81E9-4340-856C-04E645867636}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day01", "AdventOfCode2022_Day1\AdventOfCode2022_Day01.csproj", "{B1026CBF-81E9-4340-856C-04E645867636}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day2", "AdventOfCode2022_Day2\AdventOfCode2022_Day2.csproj", "{3F226F07-ED4F-4077-8C6C-77CF365CC373}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day02", "AdventOfCode2022_Day2\AdventOfCode2022_Day02.csproj", "{3F226F07-ED4F-4077-8C6C-77CF365CC373}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{036C84E0-76AF-497B-8D0F-B622A43C4112}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day3", "AdventOfCode2022_Day3\AdventOfCode2022_Day3.csproj", "{3FE16244-2AC6-4907-80DC-8CBF21C8451D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day03", "AdventOfCode2022_Day3\AdventOfCode2022_Day03.csproj", "{3FE16244-2AC6-4907-80DC-8CBF21C8451D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day4", "AdventOfCode2022_Day4\AdventOfCode2022_Day4.csproj", "{5C15ECD4-D1BD-44EF-BBD0-F64AFE253077}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day04", "AdventOfCode2022_Day4\AdventOfCode2022_Day04.csproj", "{5C15ECD4-D1BD-44EF-BBD0-F64AFE253077}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day5", "AdventOfCode2022_Day5\AdventOfCode2022_Day5.csproj", "{C0883B19-D34C-4EB3-99B6-815D30584477}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day05", "AdventOfCode2022_Day5\AdventOfCode2022_Day05.csproj", "{C0883B19-D34C-4EB3-99B6-815D30584477}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day6", "AdventOfCode2022_Day6\AdventOfCode2022_Day6.csproj", "{48E2D277-1E46-44FD-89A2-D12003C6E13B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day06", "AdventOfCode2022_Day6\AdventOfCode2022_Day06.csproj", "{48E2D277-1E46-44FD-89A2-D12003C6E13B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day7", "AdventOfCode2022_Day7\AdventOfCode2022_Day7.csproj", "{10AA4E82-0885-4537-A5F1-A12331F17AD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day07", "AdventOfCode2022_Day7\AdventOfCode2022_Day07.csproj", "{10AA4E82-0885-4537-A5F1-A12331F17AD9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day8", "AdventOfCode2022_Day8\AdventOfCode2022_Day8.csproj", "{16048475-8407-4E1B-8BAB-83795F3ECCF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day08", "AdventOfCode2022_Day8\AdventOfCode2022_Day08.csproj", "{16048475-8407-4E1B-8BAB-83795F3ECCF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCode2022_Day9", "AdventOfCode2022_Day9\AdventOfCode2022_Day9.csproj", "{83646B46-5768-4B9F-B34C-AAA999BB16E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022_Day09", "AdventOfCode2022_Day9\AdventOfCode2022_Day09.csproj", "{83646B46-5768-4B9F-B34C-AAA999BB16E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCode2022_Day10", "AdventOfCode2022_Day10\AdventOfCode2022_Day10.csproj", "{2DB08E06-3647-4A43-BF3C-4ED545902E1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +70,10 @@ Global
 		{83646B46-5768-4B9F-B34C-AAA999BB16E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83646B46-5768-4B9F-B34C-AAA999BB16E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83646B46-5768-4B9F-B34C-AAA999BB16E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DB08E06-3647-4A43-BF3C-4ED545902E1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DB08E06-3647-4A43-BF3C-4ED545902E1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DB08E06-3647-4A43-BF3C-4ED545902E1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DB08E06-3647-4A43-BF3C-4ED545902E1F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
