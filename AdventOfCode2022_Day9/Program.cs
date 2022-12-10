@@ -16,7 +16,7 @@ foreach (var move in moves)
 {
     head = head.Move(move);
 
-    tail = Adjust(head, tail);
+    tail = GetNewPosition(head, tail);
 
     visited.Add(tail);
 }
@@ -37,14 +37,14 @@ foreach (var move in moves)
 
     for (int k = 1; k<10; k++)
     {
-        rope[k] = Adjust(rope[k - 1], rope[k]);
+        rope[k] = GetNewPosition(rope[k - 1], rope[k]);
 
     }
     visited2.Add(rope[9]);
 }
 Console.WriteLine($"Tail visited {visited2.Count} points."); // 2485
 
-static void Print(Point head, Point tail, HashSet<Point>? visited = null)
+static void PrintHeadTail(Point head, Point tail, HashSet<Point>? visited = null)
 {
     var v = visited ?? new HashSet<Point>();
 
@@ -81,7 +81,7 @@ static void Print(Point head, Point tail, HashSet<Point>? visited = null)
     Thread.Sleep(150);
 }
 
-static void Print2(List<Point> rope)
+static void PrintRope(List<Point> rope)
 {
     Console.WriteLine();
     for (int y = 5; y >= 0; y--)
@@ -136,28 +136,17 @@ static class Directions
 
     public static Point Move(this Point p, Point direction) => new Point (p.X + direction.X, p.Y + direction.Y);
 
-    public static Point Delta(Point a, Point b) => new Point(a.X - b.X, a.Y - b.Y);
-
-    public static Point Adjust(Point head, Point tail)
+    public static Point GetNewPosition(Point head, Point tail)
     {
         int horizontalAdjustment = GetAdjustment(head.X, tail.X);
         int verticalAdjustment = GetAdjustment(head.Y, tail.Y);
 
-
-        if (head.X - tail.X > 1)
-            return head.Move(Left) with { Y = head.Y + verticalAdjustment };
-
-        if (head.X - tail.X < -1)
-            return head.Move(Right) with { Y = head.Y + verticalAdjustment };
-
-        if (head.Y - tail.Y > 1)
-            return head.Move(Down) with { X = head.X + horizontalAdjustment };
-
-        if (head.Y - tail.Y < -1)
-            return head.Move(Up) with { X = head.X + horizontalAdjustment };
+        if (horizontalAdjustment != 0 || verticalAdjustment != 0)
+        {
+            return new Point(head.X + horizontalAdjustment, head.Y + verticalAdjustment);
+        }
 
         return tail;
-
     }
 
     public static int GetAdjustment(int v1, int v2) => (v1 - v2) switch
