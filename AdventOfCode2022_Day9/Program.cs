@@ -139,12 +139,8 @@ static class Directions
         int horizontalAdjustment = GetAdjustment(head.X, tail.X);
         int verticalAdjustment = GetAdjustment(head.Y, tail.Y);
 
-        if (horizontalAdjustment != 0 || verticalAdjustment != 0)
-        {
-            return new Point(head.X + horizontalAdjustment, head.Y + verticalAdjustment);
-        }
-
-        return tail;
+        return horizontalAdjustment == 0 && verticalAdjustment == 0 ?
+                tail : new Point(head.X + horizontalAdjustment, head.Y + verticalAdjustment);        
     }
 
     public static int GetAdjustment(int v1, int v2) => (v1 - v2) switch
