@@ -16,7 +16,7 @@ foreach (var move in moves)
 {
     head = head.Move(move);
 
-    tail = GetNewPosition(head, tail);
+    tail = tail.MoveToward(head);
 
     visited.Add(tail);
 }
@@ -35,7 +35,7 @@ foreach (var move in moves)
 {
     for (int k = 0; k<rope.Count; k++)
     {
-        rope[k] = k == 0 ? rope[k].Move(move) : GetNewPosition(rope[k - 1], rope[k]);
+        rope[k] = k == 0 ? rope[k].Move(move) : rope[k].MoveToward(rope[k - 1]);
 
     }
     visited2.Add(rope[9]);
@@ -134,13 +134,15 @@ static class Directions
 
     public static Point Move(this Point p, Point direction) => new Point (p.X + direction.X, p.Y + direction.Y);
 
-    public static Point GetNewPosition(Point head, Point tail)
+    public static Point Move(this Point p, int x, int y) => p.Move(new Point(x , y));
+
+    public static Point MoveToward(this Point source, Point target)
     {
-        int horizontalAdjustment = GetAdjustment(head.X, tail.X);
-        int verticalAdjustment = GetAdjustment(head.Y, tail.Y);
+        int horizontalAdjustment = GetAdjustment(target.X, source.X);
+        int verticalAdjustment = GetAdjustment(target.Y, source.Y);
 
         return horizontalAdjustment == 0 && verticalAdjustment == 0 ?
-                tail : new Point(head.X + horizontalAdjustment, head.Y + verticalAdjustment);        
+                source : target.Move(horizontalAdjustment, verticalAdjustment);        
     }
 
     public static int GetAdjustment(int v1, int v2) => (v1 - v2) switch
