@@ -33,11 +33,9 @@ for (int k = 0; k<10; k++)
 var visited2 = new HashSet<Point>();
 foreach (var move in moves)
 {
-    rope[0] = rope[0].Move(move);
-
-    for (int k = 1; k<10; k++)
+    for (int k = 0; k<rope.Count; k++)
     {
-        rope[k] = GetNewPosition(rope[k - 1], rope[k]);
+        rope[k] = k == 0 ? rope[k].Move(move) : GetNewPosition(rope[k - 1], rope[k]);
 
     }
     visited2.Add(rope[9]);
