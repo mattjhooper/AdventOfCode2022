@@ -12,21 +12,16 @@ var head = new Point(0, 0);
 var tail = new Point(0, 0);
 var visited = new HashSet<Point>();
 
-// Print(head, tail);
 foreach (var move in moves)
 {
     head = head.Move(move);
-    // Print(head, tail);
 
     tail = Adjust(head, tail);
 
     visited.Add(tail);
-    // Print(head, tail);
 }
 
-// Print(head, tail, visited);
-
-Console.WriteLine($"Tail visited {visited.Count} points.");
+Console.WriteLine($"Tail visited {visited.Count} points."); // 6037
 
 var rope = new List<Point>();
 
@@ -42,29 +37,12 @@ foreach (var move in moves)
 
     for (int k = 1; k<10; k++)
     {
-        if (Math.Abs(rope[8].X - rope[9].X) > 3 || Math.Abs(rope[8].Y - rope[9].Y) > 3)
-        {
-            Print2(rope);
-            Console.WriteLine($"Head: [{rope[8].X},{rope[8].Y}]. Tail [{rope[9].X},{rope[9].Y}]");
-        }
-
-        /*
-        foreach(var adjustment in Adjust2(rope[k - 1], rope[k]))
-        {
-            rope[k] = adjustment;
-            visited2.Add(rope[9]);
-            // Print2(rope);
-        }
-        */
-        rope[k] = Adjust3(rope[k - 1], rope[k]);
+        rope[k] = Adjust(rope[k - 1], rope[k]);
 
     }
     visited2.Add(rope[9]);
-    // Print2(rope);
-    // Print(head, tail);
 }
-Print(rope[0], rope[9], visited2);
-Console.WriteLine($"Tail visited {visited2.Count} points.");
+Console.WriteLine($"Tail visited {visited2.Count} points."); // 2485
 
 static void Print(Point head, Point tail, HashSet<Point>? visited = null)
 {
@@ -160,27 +138,7 @@ static class Directions
 
     public static Point Delta(Point a, Point b) => new Point(a.X - b.X, a.Y - b.Y);
 
-    public static bool Adjacent(Point a, Point b) => Math.Abs(a.X - b.X) <= 1 && Math.Abs(a.Y - b.Y) <= 1;
-
     public static Point Adjust(Point head, Point tail)
-    {
-        if (head.X - tail.X > 1)
-            return head.Move(Left);
-
-        if (head.X - tail.X < -1)
-            return head.Move(Right);
-
-        if (head.Y - tail.Y > 1)
-            return head.Move(Down);
-
-        if (head.Y - tail.Y < -1)
-            return head.Move(Up);
-
-        return tail;
-
-    }
-
-    public static Point Adjust3(Point head, Point tail)
     {
         int horizontalAdjustment = GetAdjustment(head.X, tail.X);
         int verticalAdjustment = GetAdjustment(head.Y, tail.Y);
@@ -209,34 +167,6 @@ static class Directions
         _ => 0,
     };
 
-    public static Point GetNewPosition(Point a, Point b)
-    {
-        if (a.X - b.X > 1)
-            return b.Move(Right) with { Y = a.Y };
-
-        if (a.X - b.X < -1)
-            return b.Move(Left) with { Y = a.Y };
-
-        if (a.Y - b.Y > 1)
-            return b.Move(Up) with { X = a.X };
-
-        if (a.Y - b.Y < -1)
-            return b.Move(Down) with { X = a.X };
-
-        return b;
-    }
-
-    public static IEnumerable<Point> Adjust2(Point head, Point tail)
-    {
-        var pos = tail;
-        while (!Adjacent(head, pos))
-        {
-            pos = GetNewPosition(head, pos);
-            yield return pos;
-        }
-        yield return pos;
-    }
-
     static Point GetDirection(char c) => c switch
     {
         'U' => Up,
@@ -245,8 +175,6 @@ static class Directions
         'R' => Right,
         _ => throw new NotImplementedException(),
     };
-
-
 }
 
 record Point(int X, int Y);
