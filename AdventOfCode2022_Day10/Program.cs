@@ -20,14 +20,44 @@ foreach (var line in lines)
     }
 }
 
-Console.WriteLine($"Sum of signalStrength: {signalStrength}"); 
+Console.WriteLine($"Sum of signalStrength: {signalStrength}");
+
+cycle = 0;
+x = 1;
+foreach (var line in lines)
+{
+    DrawPixel();
+    if (line != "noop")
+    {
+        DrawPixel();
+        int addX = int.Parse(line.Split(' ')[1]);
+
+        x += addX;
+    }
+}
+
+void DrawPixel()
+{
+    char pixel = x-1 <= cycle && cycle <= x+1 ? '#' : '.';
+    Console.Write(pixel);
+
+    if (cycle == 39)
+    {
+        cycle = 0;
+        Console.WriteLine();
+    }
+    else
+    {
+        cycle++;
+    }
+}
 
 void CheckCycle()
 {
     cycle++;
     if (cycle == checkCycle)
     {
-        Console.WriteLine($"Cycle: {cycle}. X: {x}. Signal Strength: {cycle * x}");
+        // Console.WriteLine($"Cycle: {cycle}. X: {x}. Signal Strength: {cycle * x}");
         signalStrength += (cycle * x);
         checkCycle += 40;
     }
