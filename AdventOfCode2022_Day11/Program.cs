@@ -16,13 +16,16 @@ while (skipTo < lines.Length)
     monkeys.Add(Monkey.Create(monkeyLines.ToArray()));
 }
 
-Console.WriteLine($"Monkeys: {monkeys.Count}");
+var divisorProduct = monkeys.Select(m => m.Divisor).Distinct().Aggregate((long)1, (acc, val) => acc * val);
+Console.WriteLine($"Monkeys: {monkeys.Count}. DivisorProduct: {divisorProduct}");
 
-for (int r = 0; r < 20; r++)
+
+
+for (int r = 0; r < 10000; r++)
 {
     foreach (var monkey in monkeys)
     {
-        monkey.ProcessItems(monkeys);
+        monkey.ProcessItems(monkeys, divisorProduct);
     }    
 }
 
@@ -32,16 +35,26 @@ foreach (var monkey in monkeys)
     Console.WriteLine($"Monkey {monkey.Id} inspected items {monkey.InspectedItems} times.");
 }
 
+/*
+var items = monkeys.SelectMany(m => m.Items);
+
+foreach(var item in items)
+{
+    item.Print();
+}
+*/
+
 BigInteger monkeyBusiness = monkeys.OrderByDescending(m => m.InspectedItems).Take(2).Aggregate((BigInteger)1, (acc, m) => acc * m.InspectedItems);
 Console.WriteLine($"Monkey Business {monkeyBusiness}");
 
 class Item
 {
     private readonly long original;
-    private readonly int firstMonkey;
+    private readonly int firstMonkey;    
 
     public Item(long i, int monkey)
     {
+        Monkeys = new List<int>();
         this.original= i;
         this.firstMonkey = monkey;
         Current = i;
@@ -49,9 +62,21 @@ class Item
 
     public long Current { get; set; }
 
+    public List<int> Monkeys { get; set; }
+
     public void CheckCurrent(int monkey)
     {
-        Current = monkey == firstMonkey ? original : Current;
+        Monkeys.Add(monkey);
+    }
+
+    public void Print()
+    {
+        Console.Write($"Item. Original {original}. Current: {Current} ");
+        foreach (var monkey in Monkeys)
+        {
+            Console.Write($"{monkey},");
+        }
+        Console.WriteLine();
     }
 
 }
@@ -75,7 +100,7 @@ class Monkey
         Items = new Queue<Item>();
     }
 
-    public void ProcessItems(List<Monkey> monkeys)
+    public void ProcessItems(List<Monkey> monkeys, long divisorProduct)
     {
         while (Items?.Count > 0)
         {
@@ -89,8 +114,11 @@ class Monkey
             */          
 
             val.CheckCurrent(Id);
+            val.Current = val.Current % divisorProduct;
             val.Current = Operation(val.Current);
-            
+
+
+
             if (val.Current % Divisor == 0)
             {
                 monkeys[TrueMonkey].Items.Enqueue(val);
