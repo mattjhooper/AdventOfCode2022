@@ -1,4 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Numerics;
+
 Console.WriteLine("--- Day 11: Monkey in the Middle ---");
 
 var lines = await File.ReadAllLinesAsync("Input.txt");
@@ -21,7 +23,7 @@ for (int r = 0; r < 20; r++)
     foreach (var monkey in monkeys)
     {
         monkey.ProcessItems(monkeys);
-    }
+    }    
 }
 
 foreach (var monkey in monkeys)
@@ -30,26 +32,47 @@ foreach (var monkey in monkeys)
     Console.WriteLine($"Monkey {monkey.Id} inspected items {monkey.InspectedItems} times.");
 }
 
-var monkeyBusiness = monkeys.OrderByDescending(m => m.InspectedItems).Take(2).Aggregate(1, (acc, m) => acc * m.InspectedItems);
+BigInteger monkeyBusiness = monkeys.OrderByDescending(m => m.InspectedItems).Take(2).Aggregate((BigInteger)1, (acc, m) => acc * m.InspectedItems);
 Console.WriteLine($"Monkey Business {monkeyBusiness}");
+
+class Item
+{
+    private readonly long original;
+    private readonly int firstMonkey;
+
+    public Item(long i, int monkey)
+    {
+        this.original= i;
+        this.firstMonkey = monkey;
+        Current = i;
+    }
+
+    public long Current { get; set; }
+
+    public void CheckCurrent(int monkey)
+    {
+        Current = monkey == firstMonkey ? original : Current;
+    }
+
+}
 
 class Monkey
 {
     public int Id { get; set; }
 
-    public Queue<int> Items { get; }
-    public Func<int, int> Operation { get; private set; }
+    public Queue<Item> Items { get; }
+    public Func<long, long> Operation { get; private set; }
 
     public int Divisor { get; set; }
 
     public int TrueMonkey { get; set; }
     public int FalseMonkey { get; set; }
 
-    public int InspectedItems { get; set; } = 0;
+    public long InspectedItems { get; set; } = 0;
 
     private Monkey()
     {
-        Items = new Queue<int>();
+        Items = new Queue<Item>();
     }
 
     public void ProcessItems(List<Monkey> monkeys)
@@ -57,10 +80,18 @@ class Monkey
         while (Items?.Count > 0)
         {
             var val = Items.Dequeue();
-            val = Operation(val);
-            val = val / 3;
 
-            if (val % Divisor == 0)
+            /*
+            if (val > 0.99 * long.MaxValue )
+            {
+                Console.WriteLine($"Val: {val}. Max: {long.MaxValue}. Difference: {long.MaxValue - val}");
+            }
+            */          
+
+            val.CheckCurrent(Id);
+            val.Current = Operation(val.Current);
+            
+            if (val.Current % Divisor == 0)
             {
                 monkeys[TrueMonkey].Items.Enqueue(val);
             }
@@ -91,7 +122,7 @@ class Monkey
 
         foreach (var item in items)
         {
-            monkey.Items.Enqueue(int.Parse(item.Trim()));
+            monkey.Items.Enqueue(new Item(long.Parse(item.Trim()),monkey.Id));
         }
 
         monkey.Operation = GetFunction(lines[2].Substring(13));
@@ -104,7 +135,7 @@ class Monkey
 
     private static int GetValue(string line) => int.Parse(line.Split(' ').Last());
 
-    private static Func<int,int> GetFunction(string line)
+    private static Func<long, long> GetFunction(string line)
     {
         if (line == "new = old * old")
         {
