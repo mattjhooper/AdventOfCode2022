@@ -5,7 +5,6 @@ Console.WriteLine("--- Day 11: Monkey in the Middle ---");
 
 var lines = await File.ReadAllLinesAsync("Input.txt");
 
-
 var monkeys = new List<Monkey>();
 var skipTo = 0;
 while (skipTo < lines.Length)
@@ -19,8 +18,6 @@ while (skipTo < lines.Length)
 var divisorProduct = monkeys.Select(m => m.Divisor).Distinct().Aggregate((long)1, (acc, val) => acc * val);
 Console.WriteLine($"Monkeys: {monkeys.Count}. DivisorProduct: {divisorProduct}");
 
-
-
 for (int r = 0; r < 10000; r++)
 {
     foreach (var monkey in monkeys)
@@ -31,95 +28,43 @@ for (int r = 0; r < 10000; r++)
 
 foreach (var monkey in monkeys)
 {
-    // monkey.PrintItems();
     Console.WriteLine($"Monkey {monkey.Id} inspected items {monkey.InspectedItems} times.");
 }
 
-/*
-var items = monkeys.SelectMany(m => m.Items);
-
-foreach(var item in items)
-{
-    item.Print();
-}
-*/
-
-BigInteger monkeyBusiness = monkeys.OrderByDescending(m => m.InspectedItems).Take(2).Aggregate((BigInteger)1, (acc, m) => acc * m.InspectedItems);
-Console.WriteLine($"Monkey Business {monkeyBusiness}");
-
-class Item
-{
-    private readonly long original;
-    private readonly int firstMonkey;    
-
-    public Item(long i, int monkey)
-    {
-        Monkeys = new List<int>();
-        this.original= i;
-        this.firstMonkey = monkey;
-        Current = i;
-    }
-
-    public long Current { get; set; }
-
-    public List<int> Monkeys { get; set; }
-
-    public void CheckCurrent(int monkey)
-    {
-        Monkeys.Add(monkey);
-    }
-
-    public void Print()
-    {
-        Console.Write($"Item. Original {original}. Current: {Current} ");
-        foreach (var monkey in Monkeys)
-        {
-            Console.Write($"{monkey},");
-        }
-        Console.WriteLine();
-    }
-
-}
+long monkeyBusiness = monkeys.OrderByDescending(m => m.InspectedItems).Take(2).Aggregate((long)1, (acc, m) => acc * m.InspectedItems);
+Console.WriteLine($"Monkey Business {monkeyBusiness}"); // 30599555965
 
 class Monkey
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
 
-    public Queue<Item> Items { get; }
-    public Func<long, long> Operation { get; private set; }
+    public Queue<long> Items { get; }
+    public Func<long, long> Operation { get; init; }
 
-    public int Divisor { get; set; }
+    public int Divisor { get; init; }
 
-    public int TrueMonkey { get; set; }
-    public int FalseMonkey { get; set; }
+    public int TrueMonkey { get; init; }
+    public int FalseMonkey { get; init; }
 
-    public long InspectedItems { get; set; } = 0;
+    public long InspectedItems { get; private set; } = 0;
 
-    private Monkey()
+    private Monkey(int id, int divisor, int trueMonkey, int falseMonkey, Func<long, long> operation)
     {
-        Items = new Queue<Item>();
+        Id = id;
+        Divisor = divisor;
+        TrueMonkey = trueMonkey;
+        FalseMonkey = falseMonkey;
+        Items = new Queue<long>();
+        Operation = operation;
     }
 
     public void ProcessItems(List<Monkey> monkeys, long divisorProduct)
     {
         while (Items?.Count > 0)
         {
-            var val = Items.Dequeue();
+            var val = Operation(Items.Dequeue() % divisorProduct);
 
-            /*
-            if (val > 0.99 * long.MaxValue )
-            {
-                Console.WriteLine($"Val: {val}. Max: {long.MaxValue}. Difference: {long.MaxValue - val}");
-            }
-            */          
-
-            val.CheckCurrent(Id);
-            val.Current = val.Current % divisorProduct;
-            val.Current = Operation(val.Current);
-
-
-
-            if (val.Current % Divisor == 0)
+            if (val % Divisor == 0)
             {
                 monkeys[TrueMonkey].Items.Enqueue(val);
             }
@@ -143,20 +88,18 @@ class Monkey
 
     public static Monkey Create(string[] lines)
     {
-        Monkey monkey = new Monkey();
+        Monkey monkey = new Monkey(id: int.Parse(lines[0][7].ToString())
+             ,divisor: GetValue(lines[3])
+             ,trueMonkey: int.Parse(lines[4].Last().ToString())
+             ,falseMonkey: int.Parse(lines[5].Last().ToString())
+             ,operation: GetFunction(lines[2].Substring(13)));
 
-        monkey.Id = int.Parse(lines[0][7].ToString());
         var items = lines[1].Substring(18).Split(',');
 
         foreach (var item in items)
         {
-            monkey.Items.Enqueue(new Item(long.Parse(item.Trim()),monkey.Id));
+            monkey.Items.Enqueue(long.Parse(item.Trim()));
         }
-
-        monkey.Operation = GetFunction(lines[2].Substring(13));
-        monkey.Divisor = GetValue(lines[3]);
-        monkey.TrueMonkey = int.Parse(lines[4].Last().ToString());
-        monkey.FalseMonkey = int.Parse(lines[5].Last().ToString());
 
         return monkey;
     }
