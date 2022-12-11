@@ -1,38 +1,24 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Numerics;
+using static MonkeyListExtensions;
 
 Console.WriteLine("--- Day 11: Monkey in the Middle ---");
 
 var lines = await File.ReadAllLinesAsync("Input.txt");
 
-var monkeys = new List<Monkey>();
-var skipTo = 0;
-while (skipTo < lines.Length)
-{
-    var monkeyLines = lines.Skip(skipTo).Take(6);
-    skipTo += monkeyLines.Count() + 1;
+List<Monkey> monkeys = GetMonkeyList(lines);
 
-    monkeys.Add(Monkey.Create(monkeyLines.ToArray()));
-}
-
-var divisorProduct = monkeys.Select(m => m.Divisor).Distinct().Aggregate((long)1, (acc, val) => acc * val);
+var divisorProduct = monkeys.GetDivisorProduct();
 Console.WriteLine($"Monkeys: {monkeys.Count}. DivisorProduct: {divisorProduct}");
 
 for (int r = 0; r < 10000; r++)
 {
-    foreach (var monkey in monkeys)
-    {
-        monkey.ProcessItems(monkeys, divisorProduct);
-    }    
+    monkeys.ProcessItems(divisorProduct);
 }
 
-foreach (var monkey in monkeys)
-{
-    Console.WriteLine($"Monkey {monkey.Id} inspected items {monkey.InspectedItems} times.");
-}
+monkeys.PrintInspectedItems();
 
-long monkeyBusiness = monkeys.OrderByDescending(m => m.InspectedItems).Take(2).Aggregate((long)1, (acc, m) => acc * m.InspectedItems);
-Console.WriteLine($"Monkey Business {monkeyBusiness}"); // 30599555965
+Console.WriteLine($"Monkey Business {monkeys.CalculateMonkeyBusiness()}"); // 30599555965
 
 class Monkey
 {
@@ -79,7 +65,7 @@ class Monkey
     public void PrintItems()
     {
         Console.Write($"Monkey {Id}: ");
-        foreach(var item in Items)
+        foreach (var item in Items)
         {
             Console.Write($"{item}, ");
         }
@@ -89,10 +75,10 @@ class Monkey
     public static Monkey Create(string[] lines)
     {
         Monkey monkey = new Monkey(id: int.Parse(lines[0][7].ToString())
-             ,divisor: GetValue(lines[3])
-             ,trueMonkey: int.Parse(lines[4].Last().ToString())
-             ,falseMonkey: int.Parse(lines[5].Last().ToString())
-             ,operation: GetFunction(lines[2].Substring(13)));
+             , divisor: GetValue(lines[3])
+             , trueMonkey: int.Parse(lines[4].Last().ToString())
+             , falseMonkey: int.Parse(lines[5].Last().ToString())
+             , operation: GetFunction(lines[2].Substring(13)));
 
         var items = lines[1].Substring(18).Split(',');
 
@@ -124,5 +110,43 @@ class Monkey
         }
 
         return (n => n);
+    }
+}
+
+static class MonkeyListExtensions
+{
+    public static long GetDivisorProduct(this List<Monkey> monkeys) => monkeys.Select(m => m.Divisor).Distinct().Aggregate((long)1, (acc, val) => acc * val);
+
+    public static long CalculateMonkeyBusiness(this List<Monkey> monkeys) => monkeys.OrderByDescending(m => m.InspectedItems).Take(2).Aggregate((long)1, (acc, m) => acc * m.InspectedItems);
+
+    public static void ProcessItems(this List<Monkey> monkeys, long divisorProduct)
+    {
+        foreach (var monkey in monkeys)
+        {
+            monkey.ProcessItems(monkeys, divisorProduct);
+        }
+    }
+
+    public static void PrintInspectedItems(this List<Monkey> monkeys)
+    {
+        foreach (var monkey in monkeys)
+        {
+            Console.WriteLine($"Monkey {monkey.Id} inspected items {monkey.InspectedItems} times.");
+        }
+    }
+
+    public static List<Monkey> GetMonkeyList(string[] lines)
+    {
+        var monkeys = new List<Monkey>();
+        var skipTo = 0;
+        while (skipTo < lines.Length)
+        {
+            var monkeyLines = lines.Skip(skipTo).Take(6);
+            skipTo += monkeyLines.Count() + 1;
+
+            monkeys.Add(Monkey.Create(monkeyLines.ToArray()));
+        }
+
+        return monkeys;
     }
 }
