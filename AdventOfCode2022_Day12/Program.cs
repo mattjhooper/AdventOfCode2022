@@ -16,7 +16,20 @@ do
     (endFound, endNode) = terrain.ProcessNextOpenNode();
 } while (!endFound);
 
-Console.WriteLine($"Steps from Start to End: {endNode.StepsToStart()}");
+int best = endNode.StepsToStart();
+Console.WriteLine($"Steps from Start to End: {best}");
+
+foreach (var start in terrain.GetNodes('a'))
+{
+    terrain.ResetStart(start.Location);
+    do
+    {
+        (endFound, endNode) = terrain.ProcessNextOpenNode();
+    } while (!endFound);
+    int routeSteps = endNode.StepsToStart();
+    best = Math.Min(best, routeSteps);
+}
+Console.WriteLine($"Minimum Steps from Start to End: {best}");
 
 class Terrain
 {
@@ -31,12 +44,12 @@ class Terrain
         OpenPoints = new Dictionary<Point, Node>();
         ClosedPoints = new Dictionary<Point, Node>();
 
-        OpenPoints.Add(Start, StartNode());
+        ResetStart(Start);
     }
 
     public string[] Levels { get; }
 
-    public Point Start { get; }
+    public Point Start { get; private set; }
 
     public Point End { get; }
 
@@ -118,6 +131,28 @@ class Terrain
         }
 
         return (false, f);
+    }
+
+    public IEnumerable<Node> GetNodes(char c)
+    {
+        for (int y = 0; y < Levels.Length; y++)
+        {
+            for (int x = 0; x < Levels[y].Length; x++)
+            {
+                if (Levels[y][x] == c)
+                {
+                    yield return GetNode(new Point(x, y), null);
+                }
+            }
+        }
+    }
+
+    public void ResetStart(Point p)
+    {
+        Start = p;
+        OpenPoints.Clear();
+        ClosedPoints.Clear();
+        OpenPoints.Add(Start, StartNode());
     }
 
 }
