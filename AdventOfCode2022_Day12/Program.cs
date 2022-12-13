@@ -10,7 +10,7 @@ var lines = await File.ReadAllLinesAsync("Input.txt");
 var terrain = new Terrain(lines);
 
 bool endFound;
-Node endNode;
+Node? endNode;
 do
 {
     (endFound, endNode) = terrain.ProcessNextOpenNode();
@@ -26,7 +26,7 @@ foreach (var start in terrain.GetNodes('a'))
     {
         (endFound, endNode) = terrain.ProcessNextOpenNode();
     } while (!endFound);
-    int routeSteps = endNode.StepsToStart();
+    int routeSteps = endNode is null? int.MaxValue : endNode.StepsToStart();
     best = Math.Min(best, routeSteps);
 }
 Console.WriteLine($"Minimum Steps from Start to End: {best}");
@@ -102,8 +102,13 @@ class Terrain
 
     public bool InBounds(Point p) => p.X >= 0 && p.Y >= 0 && p.X < Levels[0].Length && p.Y < Levels.Length;
 
-    public (bool end, Node node) ProcessNextOpenNode()
+    public (bool end, Node? node) ProcessNextOpenNode()
     {
+        if (OpenPoints.Count == 0)
+        {
+            return (true, null);
+        }
+
         var f = OpenPoints.ToList().Select(v => v.Value).OrderBy(n => n.F).First();
         OpenPoints.Remove(f.Location);
 
