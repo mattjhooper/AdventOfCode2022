@@ -1,4 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Drawing;
+
 Console.WriteLine("--- Day 13: Distress Signal ---");
 
 var lines = await File.ReadAllLinesAsync("Input.txt");
@@ -13,14 +15,14 @@ while (offset < lines.Length)
     var packet2 = lines[offset++];
     offset++;
 
-    Console.Write($"{index}: Compare {packet1} vs {packet2}. ");
+    // Console.Write($"{index}: Compare {packet1} vs {packet2}. ");
     var left = UnpackPacket(packet1);
     var right = UnpackPacket(packet2);
 
     if (CorrectOrderList(left, right))
     {
         correctPairs.Add(index); 
-        Console.Write($"<----OK");
+        // Console.Write($"<----OK");
     }
     Console.WriteLine();
 
@@ -85,27 +87,95 @@ static bool CorrectOrder(IInput left, IInput right)
     }
     else
     {
-        return CorrectOrderIntegerInput(left.AsIntegerInput(), right.AsIntegerInput());
+        return CorrectOrderList(left.AsListInput(), right.AsListInput());
     }
 }
 
-static bool CorrectOrderIntegerInput(IntegerInput left, IntegerInput right) => left.I <= right.I;
+static bool Equal(IInput left, IInput right)
+{
+    Console.WriteLine($"Compare Equal {left} vs {right}.");
+    if (left is IntegerInput && right is IntegerInput)
+    {
+        return EqualIntegerInput(left as IntegerInput, right as IntegerInput);
+    }
+
+    if (left is ListInput && right is ListInput)
+    {
+        return EqualListInput(left as ListInput, right as ListInput);
+    }
+    return false;
+}
+
+static bool CorrectOrderIntegerInput(IntegerInput left, IntegerInput right)
+{
+    Console.WriteLine($"Compare Order {left} vs {right}.");
+    if (left.I < right.I)
+    {
+        Console.WriteLine("Left side is smaller, so inputs are in the right order");
+        return true;
+    }
+    else if (left.I > right.I)
+    {
+        Console.WriteLine("Right side is smaller, so inputs are not in the right order");
+        return false;
+    }
+
+    Console.WriteLine("Left side is equal to Right side");
+    return true;
+}
+
+
+static bool EqualIntegerInput(IntegerInput left, IntegerInput right) => left.I == right.I;
+
+static bool EqualListInput(ListInput left, ListInput right)
+{
+    bool equal = true;
+    if (left.Children.Count != right.Children.Count) 
+    {
+        equal = false;
+    }
+
+    int i = 0;
+    while (equal && i < left.Children.Count)
+    {
+        equal = Equal(left.Children[i], right.Children[i]);
+        i++;
+    }
+
+    return equal;
+}
 
 static bool CorrectOrderList(ListInput left, ListInput right)
 {
-    for (int x = 0; x < left.Children.Count; x++)
+    Console.WriteLine($"Compare {left} vs {right}.");
+    for (int x = 0; x < Math.Min(left.Children.Count, right.Children.Count); x++)
     {
-        if (x >= right.Children.Count)
+        if (Equal(left.Children[x], right.Children[x]))
         {
-            return false;
+            continue;
         }
 
+        return CorrectOrder(left.Children[x], right.Children[x]);
+
+        /*
         if (!CorrectOrder(left.Children[x], right.Children[x]))
         {
+            Console.WriteLine("CorrectOrderList, order is not correct.");
             return false;
-        }
+        } 
+        */
     }
-    return left.Children.Count <= right.Children.Count;
+
+    if (left.Children.Count <= right.Children.Count)
+    {
+        Console.WriteLine("Left side ran out of items, so inputs are in the right order");
+        return true;
+    }
+    else
+    {
+        Console.WriteLine("Right side ran out of items, so inputs are not in the right order");
+        return false;
+    }
 }
 
 interface IInput
@@ -115,6 +185,7 @@ interface IInput
     ListInput AsListInput();
 
     IntegerInput AsIntegerInput();
+
 }
 
 class ListInput : IInput
@@ -134,6 +205,11 @@ class ListInput : IInput
     public ListInput AsListInput() => this;
 
     public IntegerInput AsIntegerInput() => Children.Count >= 1 ? Children.First().AsIntegerInput() : default;
+
+    public override string ToString()
+    {
+        return $"[{string.Join(',', Children)}]";
+    }
 }
 
 record IntegerInput : IInput
@@ -152,13 +228,10 @@ record IntegerInput : IInput
     {
         var l = new ListInput(Parent);
         l.Children.Add(this);
-        if (Parent != null)
-        {
-            Parent.Children.Remove(this);
-            Parent.Children.Add(l);
-        } 
         return l;
     }
 
     public IntegerInput AsIntegerInput() => this;
+
+    public override string ToString() => I.ToString();
 }
