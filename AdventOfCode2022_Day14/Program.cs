@@ -23,7 +23,7 @@ var max = new Point(tiles.Select(d => d.Key.X).Max(), tiles.Select(d => d.Key.Y)
 
 Console.WriteLine($"Min: {min}. Max: {max}");
 
-Print(tiles, new Point(min.X -10, 0), new Point(max.X + 10, max.Y+2));
+// Print(tiles, new Point(min.X -10, 0), new Point(max.X + 10, max.Y+2));
 
 
 var sand = new Point(0,0);
@@ -49,7 +49,7 @@ while (sand != ORIGIN)
 }
 
 Console.WriteLine($"Sand Count {count}");
-Print(tiles, new Point(min.X - 10, 0), new Point(max.X + 10, max.Y + 2));
+// Print(tiles, new Point(min.X - 10, 0), new Point(max.X + 10, max.Y + 2));
 
 static void Print(Dictionary<Point, char> tiles, Point min, Point max)
 {
