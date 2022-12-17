@@ -44,12 +44,12 @@ while (sand.Y <= max.Y)
     while (!atRest && sand.Y <= max.Y);
 
     tiles.TryAdd(sand, 'O');
-    Print(tiles, min, max);
+
     count++;
 }
 
 Console.WriteLine($"Sand Count {count - 1}");
-
+Print(tiles, min, max);
 
 static void Print(Dictionary<Point, char> tiles, Point min, Point max)
 {
