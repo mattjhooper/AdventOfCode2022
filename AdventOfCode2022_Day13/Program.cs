@@ -44,6 +44,12 @@ int i1 = 1 + asString.IndexOf("[[2]]");
 int i2 = 1 + asString.IndexOf("[[6]]");
 
 Console.WriteLine($"Key 1: {i1}. Key 2: {i2}. Product: {i1 * i2}");
+Console.WriteLine();
+
+foreach(var l in asString)
+{
+    Console.WriteLine(l);
+}
 
 
 public static class Utils
