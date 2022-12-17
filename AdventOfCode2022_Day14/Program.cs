@@ -23,21 +23,21 @@ var max = new Point(tiles.Select(d => d.Key.X).Max(), tiles.Select(d => d.Key.Y)
 
 Console.WriteLine($"Min: {min}. Max: {max}");
 
-Print(tiles, min, max);
+Print(tiles, new Point(min.X -10, 0), new Point(max.X + 10, max.Y+2));
 
 
-var sand = ORIGIN with { Y = 1 };
+var sand = new Point(0,0);
 
 var count = 0;
 
-while (sand.Y <= max.Y)
+while (sand != ORIGIN)
 {
-    sand = ORIGIN with { Y = 1 };
+    sand = ORIGIN;
     bool atRest;
 
     do
     {
-        var nextPoint = tiles.NextPoint(sand);
+        var nextPoint = tiles.NextPoint(sand, max.Y + 2);
         atRest = sand == nextPoint;
         sand = nextPoint;
     }
@@ -48,8 +48,8 @@ while (sand.Y <= max.Y)
     count++;
 }
 
-Console.WriteLine($"Sand Count {count - 1}");
-Print(tiles, min, max);
+Console.WriteLine($"Sand Count {count}");
+Print(tiles, new Point(min.X - 10, 0), new Point(max.X + 10, max.Y + 2));
 
 static void Print(Dictionary<Point, char> tiles, Point min, Point max)
 {
@@ -128,8 +128,11 @@ record Point(int X, int Y)
 
 static class Extensions
 {
-    public static Point NextPoint(this Dictionary<Point, char> tiles, Point p)
+    public static Point NextPoint(this Dictionary<Point, char> tiles, Point p, int floor)
     {
+        if (p.MoveDown().Y == floor)
+            return p;
+        
         if (!tiles.ContainsKey(p.MoveDown()))
             return p.MoveDown();
 
