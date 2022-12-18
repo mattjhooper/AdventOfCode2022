@@ -5,10 +5,16 @@ var inputLines = await File.ReadAllLinesAsync("Input.txt");
 
 var sensors = inputLines.Select(ProcessLine);
 
-var excludedPoints = sensors.SelectMany(s => GetExcludedPoints(s.sensor, s.distance, 2000000)).ToHashSet();
+var excludedPoints = sensors.SelectMany(s => GetExcludedPoints(s.sensor, s.distance, 10)).ToHashSet();
 var pointsMinusSensorsBeacons = excludedPoints.Except(sensors.Select(x => x.sensor)).Except(sensors.Select(x => x.beacon));
 
 Console.WriteLine($"Excluded Points: {excludedPoints.Count()}. Without Sensors: {pointsMinusSensorsBeacons.Count()}");
+
+var allExcludedPoints = sensors.SelectMany(s => GetAllExcludedPoints(s.sensor, s.distance)).ToHashSet();
+
+var pos = GetRange(0, 20).First(p => !allExcludedPoints.Contains(p));
+
+Console.WriteLine($"Position: {pos}. Frequency: {pos.Y + pos.X * 4000000}");
 
 static (Point sensor, int distance, Point beacon) ProcessLine(string line)
 {
@@ -43,6 +49,21 @@ static IEnumerable<Point> GetExcludedPoints(Point sensor, int distance, int y)
     }
 }
 
+static IEnumerable<Point> GetAllExcludedPoints(Point sensor, int distance)
+{
+    for (int y = sensor.Y - distance; y <= sensor.Y + distance; y++)
+    {
+        foreach (var p in GetExcludedPoints(sensor, distance, y))
+            yield return p;
+    }
+}
+
+static IEnumerable<Point> GetRange(int min, int max)
+{
+    for (int x = 0; x <= max; x++)
+        for (int y = 0; y <= max; y++)
+            yield return new Point(x, y);
+}
 
 record Point(int X, int Y)
 {
