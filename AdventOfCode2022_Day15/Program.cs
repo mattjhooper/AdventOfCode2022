@@ -5,7 +5,7 @@ var inputLines = await File.ReadAllLinesAsync("Input.txt");
 
 var sensors = inputLines.Select(ProcessLine);
 
-var excludedPoints = sensors.SelectMany(s => GetExcludedPoints(s.sensor, s.distance, 10)).ToHashSet();
+var excludedPoints = sensors.SelectMany(s => GetExcludedPoints(s.sensor, s.distance, 2000000)).ToHashSet();
 var pointsMinusSensorsBeacons = excludedPoints.Except(sensors.Select(x => x.sensor)).Except(sensors.Select(x => x.beacon));
 
 Console.WriteLine($"Excluded Points: {excludedPoints.Count()}. Without Sensors: {pointsMinusSensorsBeacons.Count()}");
