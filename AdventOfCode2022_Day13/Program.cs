@@ -1,5 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Drawing;
+using System.Text;
+using System.Text.Json;
 using static Utils;
 
 Console.WriteLine("--- Day 13: Distress Signal ---");
@@ -39,17 +41,41 @@ part2.Add("[[6]]");
 var unpacked = part2.Select(UnpackPacket).ToList();
 unpacked.Sort(new ListInputComparer());
 
-var asString = unpacked.Select(l => l.ToString()).ToList();
-int i1 = 1 + asString.IndexOf("[[2]]");
-int i2 = 1 + asString.IndexOf("[[6]]");
+var asString = unpacked.Select(l => new { a = l.ToString(), b = l.ToDigitString() }).ToList();
+int i1 = 1 + asString.Select(l => l.a).ToList().IndexOf("[[2]]");
+int i2 = 1 + asString.Select(l => l.a).ToList().IndexOf("[[6]]");
 
 Console.WriteLine($"Key 1: {i1}. Key 2: {i2}. Product: {i1 * i2}");
 Console.WriteLine();
 
+/*
 foreach(var l in asString)
 {
-    Console.WriteLine(l);
+    Console.WriteLine($"{l.a} | {l.b}");
 }
+*/
+
+var l = unpacked.OrderBy(p => p.ToDigitString()).ToList();
+
+i1 = 1 + l.Select(l => l.ToString()).ToList().IndexOf("[[2]]");
+i2 = 1 + l.Select(l => l.ToString()).ToList().IndexOf("[[6]]");
+
+
+var jsonLines = lines.Where(l => !string.IsNullOrEmpty(l)).Select(l => JsonSerializer.Deserialize<JsonElement>(l)).ToList();
+
+var ent = jsonLines[2];
+
+
+
+
+/*
+foreach (var d in digitStrings)
+{
+    Console.WriteLine(d);
+}
+*/
+
+Console.WriteLine($"Key 1: {i1}. Key 2: {i2}. Product: {i1 * i2}");
 
 
 public static class Utils
@@ -256,6 +282,25 @@ public class ListInput : IInput
     public override string ToString()
     {
         return $"[{string.Join(',', Children)}]";
+    }
+
+    public string ToDigitString()
+    {
+        var digitStringBuilder = new StringBuilder();
+
+        foreach(var child in Children)
+        {
+            if (child is IntegerInput)
+            {
+                digitStringBuilder.Append(child.ToString());
+            }
+            else
+            {
+                digitStringBuilder.Append((child as ListInput).ToDigitString());
+            }
+        }
+
+        return Parent == null && digitStringBuilder.ToString() == "" ? "_" : digitStringBuilder.ToString();
     }
 }
 
