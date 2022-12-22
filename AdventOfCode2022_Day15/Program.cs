@@ -13,57 +13,26 @@ var sensors = inputLines.Select(ProcessLine).ToList();
 
 //Console.WriteLine($"Excluded Points: {excludedPoints.Count()}. Without Sensors: {pointsMinusSensorsBeacons.Count()}");
 
-/*
 var allExcludedPoints = sensors.SelectMany(s => GetAllExcludedPoints(s.sensor, s.distance)).ToHashSet();
 
-var pos = GetRange(0, 4000000).First(p => !allExcludedPoints.Contains(p));
+var pos = GetRange(0, 20).First(p => !allExcludedPoints.Contains(p));
 
 Console.WriteLine($"Position: {pos}. Frequency: {pos.Y + pos.X * 4000000}");
-*/
 
-bool keepLooking = true;
 int y = 0;
 int x = 0;
 
-Stopwatch stopWatch = new Stopwatch();
-stopWatch.Start();
 
-while (keepLooking && y <= 4000000)
-{
-    if (y % 10000 == 0)
-    {
-        TimeSpan ts = stopWatch.Elapsed;
+var positives = sensors.Select(s => GetLineConstants(s.sensor, s.distance)).ToList();
 
-        // Format and display the TimeSpan value.
-        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds / 10);
-        Console.WriteLine($"Y: {y}. RunTime {elapsedTime}");
-    }
-
-    
-    var xPoints = Enumerable.Range(0, 4000000).ToList();
-
-    int i = 0;
-
-    while (xPoints.Count > 1 && i < sensors.Count)
-    {
-        var r = GetXRange(sensors[i].sensor, sensors[i].distance, y);
-        xPoints.RemoveAll(n => r.minX <= n && n <= r.maxX);    
-        i++;
-    }
-
-    if (xPoints.Count == 1)
-    {
-        keepLooking = false;
-        x = xPoints.Single();
-        continue;
-    }
-
-    y++;
-}
+var posRange = Enumerable.Range(0, 20).ToList();
 
 Console.WriteLine($"Position: [{x},{y}]. Frequency: {y + x * 4000000}");
+
+
+
+
+
 
 static (Point sensor, int distance, Point beacon) ProcessLine(string line)
 {
@@ -118,6 +87,13 @@ static (int minX, int maxX) GetXRange(Point sensor, int distance, int y)
 {
     int yDelta = Math.Abs(y - sensor.Y);
     return (sensor.X - (distance - yDelta), sensor.X + (distance - yDelta));
+}
+
+static (int c1, int c2) GetLineConstants(Point sensor, int distance)
+{
+    // y = x + c
+    int c = sensor.Y - sensor.X;
+    return (c - distance, c + distance);
 }
 
 record Point(int X, int Y)
